@@ -5,14 +5,28 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.*
+import com.example.travelplanner.data.local.AppDatabase
+import com.example.travelplanner.data.remote.MockTripApiService
+import com.example.travelplanner.data.repository.TripRepository
+import com.example.travelplanner.data.repository.UserRepository
 import com.example.travelplanner.ui.screen.AddTripScreen
 import com.example.travelplanner.ui.screen.ProfileScreen
 import com.example.travelplanner.ui.screen.TripDetailScreen
 import com.example.travelplanner.ui.screen.TripsListScreen
+import com.example.travelplanner.ui.viewmodel.TripViewModel
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+
+    val context = androidx.compose.ui.platform.LocalContext.current
+
+    val database = remember { AppDatabase.getDatabase(context) }
+    val apiService = remember { MockTripApiService() }
+    val repository = remember { TripRepository(database.tripDao(), apiService) }
+    val userRepository = remember { UserRepository(database.userDao()) }
+
+    val tripViewModel = remember { TripViewModel(repository, userRepository) }
 
     Scaffold(
         bottomBar = {AppBottomNavigation(navController)}
@@ -25,7 +39,8 @@ fun AppNavigation() {
         ) {
             composable(Screen.Trips.route) {
                 TripsListScreen(
-                    navController = navController
+                    navController = navController,
+                    viewModel = tripViewModel
                 )
             }
 
@@ -34,7 +49,8 @@ fun AppNavigation() {
 
                 TripDetailScreen(
                     tripId = tripId,
-                    navController = navController
+                    navController = navController,
+                    viewModel = tripViewModel
                 )
             }
 
@@ -46,11 +62,11 @@ fun AppNavigation() {
 //            }
 
             composable(Screen.AddTrip.route) {
-                AddTripScreen(navController = navController)
+                AddTripScreen(navController = navController, viewModel = tripViewModel)
             }
 
             composable(Screen.Profile.route) {
-                ProfileScreen(navController = navController)
+                ProfileScreen(navController = navController, viewModel = tripViewModel)
             }
         }
     }

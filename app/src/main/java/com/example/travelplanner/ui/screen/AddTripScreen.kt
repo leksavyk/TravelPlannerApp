@@ -18,13 +18,14 @@ import com.example.travelplanner.data.MockData
 import com.example.travelplanner.data.model.Place
 import com.example.travelplanner.ui.components.DatePickerModal
 import com.example.travelplanner.ui.navigation.Screen
+import com.example.travelplanner.ui.viewmodel.TripViewModel
 import com.example.travelplanner.utils.formatToUk
 import java.util.Date
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTripScreen(navController: NavController) {
+fun AddTripScreen(navController: NavController, viewModel: TripViewModel) {
     var title by remember { mutableStateOf("") }
     var budget by remember { mutableStateOf("") }
     var selectedDate by remember { mutableStateOf<Long?>(null) }
@@ -82,7 +83,7 @@ fun AddTripScreen(navController: NavController) {
                     )
                     IconButton(onClick = {
                         if (newPlaceName.isNotBlank()) {
-                            tempPlaces.add(Place(UUID.randomUUID(), newPlaceName, 0f, false))
+                            tempPlaces.add(Place(UUID.randomUUID(), newPlaceName, false))
                             newPlaceName = ""
                         }
                     }) {
@@ -101,12 +102,16 @@ fun AddTripScreen(navController: NavController) {
                 Button(
                     onClick = {
                         if (title.isNotBlank() && budget.isNotBlank()) {
-                            MockData.addNewTrip(
+                            val newTrip = com.example.travelplanner.data.model.Trip(
+                                id = UUID.randomUUID(),
                                 title = title,
                                 budget = budget.toDoubleOrNull() ?: 0.0,
-                                date = selectedDate,
+                                startDate = java.util.Date(selectedDate ?: System.currentTimeMillis()),
+                                isCompleted = false,
                                 places = tempPlaces.toList()
                             )
+                            viewModel.addTrip(newTrip)
+
                             navController.navigate(Screen.Trips.route) {
                                 popUpTo(Screen.Trips.route) { inclusive = true }
                             }

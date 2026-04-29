@@ -5,6 +5,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
@@ -12,11 +14,12 @@ import androidx.navigation.NavController
 
 import com.example.travelplanner.data.MockData
 import com.example.travelplanner.ui.navigation.Screen
+import com.example.travelplanner.ui.viewmodel.TripViewModel
 
 @Composable
-fun TripsListScreen(navController: NavController) {
+fun TripsListScreen(navController: NavController, viewModel: TripViewModel) {
 
-    val trips = MockData.tripsList
+    val trips by viewModel.trips.collectAsState()
 
     Column {
         Text(

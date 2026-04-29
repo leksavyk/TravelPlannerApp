@@ -12,15 +12,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.*
 import com.example.travelplanner.data.MockData
+import com.example.travelplanner.ui.viewmodel.TripViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(navController: NavController) {
-    val user = MockData.currentUser
+fun ProfileScreen(navController: NavController, viewModel: TripViewModel) {
+    val user by viewModel.currentUser.collectAsState()
+    val trips by viewModel.trips.collectAsState()
 
-    val totalTrips = user.myTrips.size
-    val completedTrips = user.myTrips.count { it.isCompleted }
-    val totalBudget = user.myTrips.sumOf { it.budget }
+    val totalTrips = trips.size
+    val completedTrips = trips.count { it.isCompleted }
+    val totalBudget = trips.sumOf { it.budget }
 
     Scaffold(
         topBar = {
@@ -43,9 +45,15 @@ fun ProfileScreen(navController: NavController) {
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            Text(text = user.username, style = MaterialTheme.typography.headlineMedium)
-            Text(text = user.email, style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+            Text(
+                text = user?.username ?: "Завантаження...",
+                style = MaterialTheme.typography.headlineMedium
+            )
+            Text(
+                text = user?.email ?: "",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
 
             Spacer(modifier = Modifier.height(32.dp))
 
