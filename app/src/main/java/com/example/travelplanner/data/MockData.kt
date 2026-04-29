@@ -12,13 +12,13 @@ object MockData {
         Place(
             id = UUID.randomUUID(),
             name = "Золоті Ворота",
-            rating = 4.8f,
+            //rating = 4.8f,
             isVisited = true
         ),
         Place(
             id = UUID.randomUUID(),
             name = "Андріївський узвіз",
-            rating = 4.9f,
+            //rating = 4.9f,
             isVisited = true
         )
     )
@@ -27,13 +27,13 @@ object MockData {
         Place(
             id = UUID.randomUUID(),
             name = "Площа Ринок",
-            rating = 5.0f,
+            //rating = 5.0f,
             isVisited = false
         ),
         Place(
             id = UUID.randomUUID(),
             name = "Високий Замок",
-            rating = 4.5f,
+            //rating = 4.5f,
             isVisited = false
         )
     )
@@ -74,7 +74,7 @@ object MockData {
             val newPlace = Place(
                 id = UUID.randomUUID(),
                 name = placeName,
-                rating = 0.0f,
+                //rating = 0.0f,
                 isVisited = false
             )
 
