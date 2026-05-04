@@ -8,12 +8,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.*
-import com.example.travelplanner.data.MockData
 import com.example.travelplanner.data.model.Place
 import com.example.travelplanner.ui.viewmodel.TripViewModel
 import com.example.travelplanner.utils.formatToUk
@@ -26,7 +26,33 @@ fun TripDetailScreen(tripId: String?, navController: NavController, viewModel: T
     val trip = trips.find { it.id.toString() == tripId }
 
     var showDialog by remember { mutableStateOf(false) }
+    var showDeleteConfirm by remember { mutableStateOf(false) }
     var newPlaceName by remember { mutableStateOf("") }
+
+    if (showDeleteConfirm && trip != null) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirm = false },
+            title = { Text("Видалити подорож?") },
+            text = { Text("Ви впевнені, що хочете видалити подорож \"${trip.title}\" та всі пов'язані локації? Цю дію неможливо скасувати") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.deleteTrip(trip)
+                        showDeleteConfirm = false
+                        navController.popBackStack()
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Видалити")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirm = false }) {
+                    Text("Скасувати")
+                }
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -39,6 +65,18 @@ fun TripDetailScreen(tripId: String?, navController: NavController, viewModel: T
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Назад"
                         )
+                    }
+                }
+                ,
+                actions = {
+                    if (trip != null) {
+                        IconButton(onClick = { showDeleteConfirm = true }) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Видалити подорож",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
                     }
                 }
             )
