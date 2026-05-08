@@ -17,7 +17,7 @@ import com.example.travelplanner.data.local.entity.UserEntity
  */
 @Database(
     entities = [TripEntity::class, PlaceEntity::class, UserEntity::class],
-    version = 2,
+    version = 4,
     exportSchema = true
 )
 @TypeConverters(Converters::class)

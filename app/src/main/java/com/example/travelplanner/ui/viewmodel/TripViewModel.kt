@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class TripViewModel(private val repository: TripRepository, private val userRepository: UserRepository) : ViewModel() {
+class TripViewModel(private val repository: TripRepository, val userRepository: UserRepository) : ViewModel() {
     val trips: StateFlow<List<Trip>> = repository.allTrips
         .stateIn(
             scope = viewModelScope,
@@ -23,25 +23,6 @@ class TripViewModel(private val repository: TripRepository, private val userRepo
         initialValue = null
     )
 
-    init {
-        // Імітація: при старті перевіряємо, чи є юзер. Якщо нема — створюємо.
-        viewModelScope.launch {
-            userRepository.currentUser.collect { user ->
-                if (user == null) {
-                    userRepository.registerUser(
-                        id = "dev_user_123",
-                        username = "Oleksandra",
-                        email = "oleksandra@example.com",
-                    )
-                }
-            }
-        }
-    }
-//    fun addTrip(trip: Trip) {
-//        viewModelScope.launch {
-//            repository.saveTrip(trip)
-//        }
-//    }
     fun addTrip(trip: Trip) {
         viewModelScope.launch {
             val user = currentUser.value

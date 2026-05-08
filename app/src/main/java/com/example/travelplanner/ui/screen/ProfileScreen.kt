@@ -3,6 +3,7 @@ package com.example.travelplanner.ui.screen
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -12,11 +13,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.*
 import com.example.travelplanner.data.MockData
+import com.example.travelplanner.ui.viewmodel.AuthViewModel
 import com.example.travelplanner.ui.viewmodel.TripViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(navController: NavController, viewModel: TripViewModel) {
+fun ProfileScreen(navController: NavController, viewModel: TripViewModel, authViewModel: AuthViewModel) {
     val user by viewModel.currentUser.collectAsState()
     val trips by viewModel.trips.collectAsState()
 
@@ -68,6 +70,39 @@ fun ProfileScreen(navController: NavController, viewModel: TripViewModel) {
                     ProfileStatRow("Всього поїздок", totalTrips.toString())
                     ProfileStatRow("Завершено", completedTrips.toString())
                     ProfileStatRow("Загальний бюджет", "${totalBudget} грн")
+                }
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            user?.let { currentUser ->
+                Button(
+                    onClick = {
+                        authViewModel.logout(currentUser.id)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+
+//                        containerColor = MaterialTheme.colorScheme.errorContainer,
+//                        contentColor = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                ) {
+                    Icon(Icons.Default.ExitToApp, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Вийти з профілю")
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                TextButton(
+                    onClick = {
+                        authViewModel.deleteAccount(currentUser.id)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Видалити акаунт", color = MaterialTheme.colorScheme.error)
                 }
             }
         }

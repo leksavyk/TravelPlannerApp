@@ -10,9 +10,11 @@ import com.example.travelplanner.data.remote.MockTripApiService
 import com.example.travelplanner.data.repository.TripRepository
 import com.example.travelplanner.data.repository.UserRepository
 import com.example.travelplanner.ui.screen.AddTripScreen
+import com.example.travelplanner.ui.screen.AuthScreen
 import com.example.travelplanner.ui.screen.ProfileScreen
 import com.example.travelplanner.ui.screen.TripDetailScreen
 import com.example.travelplanner.ui.screen.TripsListScreen
+import com.example.travelplanner.ui.viewmodel.AuthViewModel
 import com.example.travelplanner.ui.viewmodel.TripViewModel
 
 @Composable
@@ -23,20 +25,31 @@ fun AppNavigation() {
 
     val database = remember { AppDatabase.getDatabase(context) }
     val apiService = remember { MockTripApiService() }
-    val repository = remember { TripRepository(database.tripDao(), apiService) }
+    val tripRepository = remember { TripRepository(database.tripDao(), apiService) }
     val userRepository = remember { UserRepository(database.userDao()) }
 
-    val tripViewModel = remember { TripViewModel(repository, userRepository) }
+    val tripViewModel = remember { TripViewModel(tripRepository, userRepository) }
+    val authViewModel = remember { AuthViewModel(userRepository) }
+
+    val currentUser by userRepository.currentUser.collectAsState(initial = null)
 
     Scaffold(
-        bottomBar = {AppBottomNavigation(navController)}
+        bottomBar = {
+            if (currentUser != null) {
+                AppBottomNavigation(navController)
+            }
+        }
     ) { innerPadding ->
 
         NavHost(
             navController = navController,
-            startDestination = Screen.Trips.route,
+            startDestination = if (currentUser == null) "auth" else Screen.Trips.route,
             modifier = Modifier.padding(innerPadding)
         ) {
+            composable("auth") {
+                AuthScreen(navController = navController, viewModel = authViewModel)
+            }
+
             composable(Screen.Trips.route) {
                 TripsListScreen(
                     navController = navController,
@@ -54,19 +67,12 @@ fun AppNavigation() {
                 )
             }
 
-//            composable("${Screen.PlaceDetail.route}/{placeId}") { backStackEntry ->
-//                val placeId = backStackEntry.arguments?.getString("placeId")
-//                PlaceDetailScreen(
-//                    placeId = placeId
-//                )
-//            }
-
             composable(Screen.AddTrip.route) {
                 AddTripScreen(navController = navController, viewModel = tripViewModel)
             }
 
             composable(Screen.Profile.route) {
-                ProfileScreen(navController = navController, viewModel = tripViewModel)
+                ProfileScreen(navController = navController, viewModel = tripViewModel, authViewModel = authViewModel)
             }
         }
     }
