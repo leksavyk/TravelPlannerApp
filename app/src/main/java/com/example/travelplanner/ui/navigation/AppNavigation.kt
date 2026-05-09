@@ -25,8 +25,8 @@ fun AppNavigation() {
 
     val database = remember { AppDatabase.getDatabase(context) }
     val apiService = remember { MockTripApiService() }
-    val tripRepository = remember { TripRepository(database.tripDao(), apiService) }
     val userRepository = remember { UserRepository(database.userDao()) }
+    val tripRepository = remember { TripRepository(database.tripDao(), apiService, userRepository) }
 
     val tripViewModel = remember { TripViewModel(tripRepository, userRepository) }
     val authViewModel = remember { AuthViewModel(userRepository) }

@@ -7,12 +7,22 @@ import com.example.travelplanner.data.mapper.toEntity
 import com.example.travelplanner.data.model.SyncStatus
 import com.example.travelplanner.data.model.Trip
 import com.example.travelplanner.data.remote.MockTripApiService
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
-class TripRepository(private val tripDao: TripDao, private val apiService: MockTripApiService) {
-    val allTrips: Flow<List<Trip>> = tripDao.getAllTrips().map { entities ->
-        entities.map { it.toDomain() }
+class TripRepository(private val tripDao: TripDao, private val apiService: MockTripApiService, private val userRepository: UserRepository) {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val allTrips: Flow<List<Trip>> = userRepository.currentUser.flatMapLatest { user ->
+        if (user == null) {
+            flowOf(emptyList())
+        } else {
+            tripDao.getTripsByUser(user.id).map { entities ->
+                entities.map { it.toDomain() }
+            }
+        }
     }
 
     suspend fun getTripById(id: String): Trip? {
@@ -44,15 +54,34 @@ class TripRepository(private val tripDao: TripDao, private val apiService: MockT
         }
     }
 
+//    suspend fun deleteTrip(trip: Trip, userId: String) {
+//        val entity = trip.toEntity(ownerId = userId)
+//        tripDao.deleteTrip(entity)
+//
+//        try {
+//            apiService.deleteTripFromServer(entity.id)
+//        } catch (e: Exception) {
+//            // Offline-first логіка
+//        }
+//    }
 
     suspend fun deleteTrip(trip: Trip, userId: String) {
         val entity = trip.toEntity(ownerId = userId)
-        tripDao.deleteTrip(entity)
 
         try {
-            apiService.deleteTripFromServer(entity.id)
+            val isDeletedOnServer = apiService.deleteTripFromServer(entity.id)
+
+            if (isDeletedOnServer) {
+                tripDao.deleteTrip(entity)
+                // println("DEBUG: Видалено всюди")
+            } else {
+                tripDao.updateSyncStatus(entity.id, SyncStatus.ERROR)
+            }
         } catch (e: Exception) {
-            // Offline-first логіка
+            // OFFLINE-FIRST: якщо мережі немає
+            tripDao.updateSyncStatus(entity.id, SyncStatus.ERROR)
+            tripDao.deleteTrip(entity)
+            // println("DEBUG: Видалено локально, але сервер не відповів. Потрібна синхронізація пізніше")
         }
     }
 }

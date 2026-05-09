@@ -1,23 +1,37 @@
 package com.example.travelplanner.ui.screen
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.*
 import com.example.travelplanner.data.model.Place
 import com.example.travelplanner.ui.viewmodel.TripViewModel
 import com.example.travelplanner.utils.formatToUk
 import java.util.UUID
+import com.example.travelplanner.R
+import com.example.travelplanner.ui.components.TripHeaderCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,7 +104,9 @@ fun TripDetailScreen(tripId: String?, navController: NavController, viewModel: T
         if (trip != null) {
             if (showDialog) {
                 AlertDialog(
-                    onDismissRequest = { showDialog = false },
+                    onDismissRequest = {
+                        showDialog = false
+                        newPlaceName = "" },
                     title = { Text("Нове місце") },
                     text = {
                         TextField(
@@ -101,7 +117,7 @@ fun TripDetailScreen(tripId: String?, navController: NavController, viewModel: T
                     },
                     confirmButton = {
                         TextButton(onClick = {
-                            if (newPlaceName.isNotBlank() && trip != null) {
+                            if (newPlaceName.isNotBlank()) {
                                 val newPlace = Place(
                                     id = UUID.randomUUID(),
                                     name = newPlaceName,
@@ -119,7 +135,10 @@ fun TripDetailScreen(tripId: String?, navController: NavController, viewModel: T
                         }
                     },
                     dismissButton = {
-                        TextButton(onClick = { showDialog = false }) {
+                        TextButton(onClick = {
+                            showDialog = false
+                            newPlaceName = ""
+                        }) {
                             Text("Скасувати")
                         }
                     }
@@ -128,10 +147,16 @@ fun TripDetailScreen(tripId: String?, navController: NavController, viewModel: T
 
             LazyColumn(modifier = Modifier.padding(padding).padding(16.dp)) {
                 item {
-                    Text("Бюджет: ${trip.budget}", style = MaterialTheme.typography.bodyLarge)
-                    Text("Дата: ${trip.startDate.formatToUk()}", style = MaterialTheme.typography.bodyMedium)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text("Місця для відвідування:", style = MaterialTheme.typography.titleMedium)
+                    TripHeaderCard(
+                        budget = trip.budget,
+                        date = trip.startDate.formatToUk()
+                    )
+                    Text(
+                        text = "Місця для відвідування",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 14.dp)
+                    )
                 }
 
                 items(trip.places) { place ->
@@ -142,12 +167,13 @@ fun TripDetailScreen(tripId: String?, navController: NavController, viewModel: T
                                 if (it.id == place.id) it.copy(isVisited = isChecked) else it
                             }
                             val allVisited = updatedPlaces.all { it.isVisited }
+                            viewModel.addTrip(trip.copy(places = updatedPlaces, isCompleted = allVisited))
+                        },
+                        onDelete = {
+                            val updatedPlaces = trip.places.filter { it.id != place.id }
+                            val allVisited = updatedPlaces.isNotEmpty() && updatedPlaces.all { it.isVisited }
 
-                            val updatedTrip = trip.copy(
-                                places = updatedPlaces,
-                                isCompleted = allVisited
-                            )
-                            viewModel.addTrip(updatedTrip)
+                            viewModel.addTrip(trip.copy(places = updatedPlaces, isCompleted = allVisited))
                         }
                     )
                 }

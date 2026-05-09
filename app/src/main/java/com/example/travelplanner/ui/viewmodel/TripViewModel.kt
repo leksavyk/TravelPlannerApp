@@ -7,6 +7,8 @@ import com.example.travelplanner.data.repository.TripRepository
 import com.example.travelplanner.data.repository.UserRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -25,9 +27,12 @@ class TripViewModel(private val repository: TripRepository, val userRepository: 
 
     fun addTrip(trip: Trip) {
         viewModelScope.launch {
-            val user = currentUser.value
-            if (user != null) {
+            try {
+                val user = userRepository.currentUser.filterNotNull().first()
+
                 repository.saveTrip(trip, user.id)
+            } catch (e: Exception) {
+                println("DEBUG: Save error: ${e.message}")
             }
         }
     }

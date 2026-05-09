@@ -4,8 +4,8 @@ import com.example.travelplanner.data.local.entity.TripEntity
 import kotlinx.coroutines.delay
 
 /**
- * Імітація серверного API.
- * Використовує затримку (delay) для симуляції мережевого запиту.
+ * Simulates a server API.
+ * Uses a delay to simulate a network request
  */
 class MockTripApiService {
 
