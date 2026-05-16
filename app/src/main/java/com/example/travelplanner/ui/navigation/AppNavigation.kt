@@ -9,11 +9,13 @@ import com.example.travelplanner.data.local.AppDatabase
 import com.example.travelplanner.data.remote.MockTripApiService
 import com.example.travelplanner.data.repository.TripRepository
 import com.example.travelplanner.data.repository.UserRepository
+import com.example.travelplanner.data.websocket.SocketManager
 import com.example.travelplanner.ui.screen.AddTripScreen
 import com.example.travelplanner.ui.screen.AuthScreen
 import com.example.travelplanner.ui.screen.ProfileScreen
 import com.example.travelplanner.ui.screen.TripDetailScreen
 import com.example.travelplanner.ui.screen.TripsListScreen
+import com.example.travelplanner.ui.screen.NotificationScreen
 import com.example.travelplanner.ui.viewmodel.AuthViewModel
 import com.example.travelplanner.ui.viewmodel.TripViewModel
 
@@ -27,8 +29,9 @@ fun AppNavigation() {
     val apiService = remember { MockTripApiService() }
     val userRepository = remember { UserRepository(database.userDao()) }
     val tripRepository = remember { TripRepository(database.tripDao(), apiService, userRepository) }
+    val socketManager = remember { SocketManager() }
 
-    val tripViewModel = remember { TripViewModel(tripRepository, userRepository) }
+    val tripViewModel = remember { TripViewModel(tripRepository, userRepository, socketManager) }
     val authViewModel = remember { AuthViewModel(userRepository) }
 
     val currentUser by userRepository.currentUser.collectAsState(initial = null)
@@ -73,6 +76,10 @@ fun AppNavigation() {
 
             composable(Screen.Profile.route) {
                 ProfileScreen(navController = navController, viewModel = tripViewModel, authViewModel = authViewModel)
+            }
+
+            composable("notifications") {
+                NotificationScreen(navController = navController, viewModel = tripViewModel)
             }
         }
     }

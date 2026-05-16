@@ -10,5 +10,5 @@ sealed class Screen(val route: String, val title: String? = null, val icon: Imag
     object Profile : Screen(route = "profile", title = "Profile", icon = Icons.Default.Person)
 
     object TripDetail : Screen("trip_detail")
-    object PlaceDetail : Screen("place_detail")
+    object Notifications : Screen(route = "notifications", title = "Notification", Icons.Default.Notifications)
 }
