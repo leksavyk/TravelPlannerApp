@@ -24,33 +24,14 @@ fun NotificationScreen(navController: NavController, viewModel: TripViewModel) {
     val notifications by viewModel.notifications.collectAsState()
     val hasUnread = notifications.any { !it.isRead }
 
-//    val connectionState by viewModel.connectionState.collectAsState()
-
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Column {
-                        Text(
-                            text = "Центр сповіщень",
-                            style = MaterialTheme.typography.titleLarge
-                        )
-//                        Spacer(modifier = Modifier.height(4.dp))
-//                        Row(verticalAlignment = Alignment.CenterVertically) {
-//                            val statusColor = when (connectionState) {
-//                                is ConnectionState.Connected -> Color.Green
-//                                is ConnectionState.Connecting -> Color.Yellow
-//                                is ConnectionState.Reconnecting -> Color.Cyan
-//                                else -> Color.Red
-//                            }
-//                            Box(modifier = Modifier.size(8.dp).background(statusColor, CircleShape))
-//                            Spacer(Modifier.width(8.dp))
-//                            Text(
-//                                text = "Статус: ${connectionState}",
-//                                style = MaterialTheme.typography.bodySmall
-//                            )
-//                        }
-                    }
+                    Text(
+                        text = "Центр сповіщень",
+                        style = MaterialTheme.typography.titleLarge
+                    )
                 },
                 actions = {
                     if (hasUnread) {
@@ -70,14 +51,27 @@ fun NotificationScreen(navController: NavController, viewModel: TripViewModel) {
     ) { paddingValues ->
         if (notifications.isEmpty()) {
             Box(
-                modifier = Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
-                    Text("Поки що немає нових сповіщень") }
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Поки що немає нових сповіщень")
+            }
         } else {
             LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp)
             ) {
-                items(notifications) {
-                    notification -> NotificationItem(notification,  onClick = { viewModel.markAsRead(notification.timestamp)})
+                items(
+                    items = notifications,
+                    key = { it.timestamp }
+                ) { notification ->
+                    NotificationItem(
+                        notification,
+                        onClick = { viewModel.markAsRead(notification.timestamp) })
                 }
             }
         }

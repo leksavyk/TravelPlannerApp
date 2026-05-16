@@ -12,6 +12,7 @@ import com.example.travelplanner.data.repository.UserRepository
 import com.example.travelplanner.data.websocket.SocketManager
 import com.example.travelplanner.ui.screen.AddTripScreen
 import com.example.travelplanner.ui.screen.AuthScreen
+import com.example.travelplanner.ui.screen.CalendarScreen
 import com.example.travelplanner.ui.screen.ProfileScreen
 import com.example.travelplanner.ui.screen.TripDetailScreen
 import com.example.travelplanner.ui.screen.TripsListScreen
@@ -72,6 +73,10 @@ fun AppNavigation() {
 
             composable(Screen.AddTrip.route) {
                 AddTripScreen(navController = navController, viewModel = tripViewModel)
+            }
+
+            composable(Screen.Calendar.route) {
+                CalendarScreen(viewModel = tripViewModel, navController = navController)
             }
 
             composable(Screen.Profile.route) {
