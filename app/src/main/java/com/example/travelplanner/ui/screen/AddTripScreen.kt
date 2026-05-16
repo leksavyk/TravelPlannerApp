@@ -63,15 +63,6 @@ fun AddTripScreen(navController: NavController, viewModel: TripViewModel) {
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
 
-//                OutlinedButton(
-//                    onClick = { showDatePicker = true },
-//                    modifier = Modifier.fillMaxWidth()
-//                ) {
-//                    Icon(Icons.Default.DateRange, contentDescription = null)
-//                    Spacer(Modifier.width(8.dp))
-//                    Text(text = selectedDate?.let { Date(it).formatToUk() } ?: "Оберіть дату")
-//                }
-
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedButton(
                         onClick = { showDatePicker = true },

@@ -72,30 +72,14 @@ fun TripsListScreen(navController: NavController, viewModel: TripViewModel) {
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
             if (trips.isEmpty()) {
-                // ВИКЛИК ПОРОЖНЬОГО ЕКРАНА
-                EmptyTripState(onAddTripClick = {
-                    navController.navigate(Screen.AddTrip.route)
-                })
+                EmptyTripState(onAddTripClick = { navController.navigate(Screen.AddTrip.route) })
             } else {
-                // СПИСОК ПОДОРОЖЕЙ
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(trips) { trip ->
                         TripItem(trip = trip) {
                             navController.navigate("${Screen.TripDetail.route}/${trip.id}")
                         }
                     }
-                }
-            }
-        }
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            items(trips) { trip ->
-                TripItem(trip = trip) {
-                    navController.navigate("${Screen.TripDetail.route}/${trip.id}")
                 }
             }
         }
