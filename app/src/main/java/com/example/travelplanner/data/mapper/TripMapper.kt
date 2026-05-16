@@ -17,7 +17,8 @@ fun TripEntity.toDomain(placesList: List<Place> = emptyList()): Trip {
         id = UUID.fromString(id),
         title = title,
         budget = budget,
-        startDate = Date(date),
+        startDate = Date(startDate),
+        endDate = Date(endDate),
         isCompleted = isCompleted,
         places = placesList
     )
@@ -29,7 +30,8 @@ fun Trip.toEntity(status: SyncStatus = SyncStatus.PENDING, ownerId: String): Tri
         userId = ownerId,
         title = title,
         budget = budget,
-        date = startDate.time,
+        startDate = startDate.time,
+        endDate = endDate.time,
         isCompleted = isCompleted,
         syncStatus = status
     )
@@ -40,7 +42,8 @@ fun TripWithPlaces.toDomain(): Trip {
         id = UUID.fromString(trip.id),
         title = trip.title,
         budget = trip.budget,
-        startDate = Date(trip.date),
+        startDate = Date(trip.startDate),
+        endDate = Date(trip.endDate),
         isCompleted = trip.isCompleted,
         // Мапимо список PlaceEntity у список Place
         places = places.map { it.toDomain() }

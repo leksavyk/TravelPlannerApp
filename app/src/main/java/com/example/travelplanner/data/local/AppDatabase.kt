@@ -8,7 +8,9 @@ import com.example.travelplanner.data.local.entity.PlaceEntity
 import com.example.travelplanner.data.local.entity.TripEntity
 import android.content.Context
 import androidx.room.Room
+import com.example.travelplanner.data.local.dao.PackingDao
 import com.example.travelplanner.data.local.dao.UserDao
+import com.example.travelplanner.data.local.entity.PackingItemEntity
 import com.example.travelplanner.data.local.entity.UserEntity
 
 /**
@@ -16,8 +18,8 @@ import com.example.travelplanner.data.local.entity.UserEntity
  * Stores local data about trips and locations
  */
 @Database(
-    entities = [TripEntity::class, PlaceEntity::class, UserEntity::class],
-    version = 4,
+    entities = [TripEntity::class, PlaceEntity::class, UserEntity::class, PackingItemEntity::class],
+    version = 5,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -25,6 +27,7 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun tripDao(): TripDao
     abstract fun userDao(): UserDao
+    abstract fun packingDao(): PackingDao
 
     companion object {
         private const val DATABASE_NAME = "travel_planner_db"

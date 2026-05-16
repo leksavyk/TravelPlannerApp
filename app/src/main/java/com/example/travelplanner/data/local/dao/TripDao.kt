@@ -20,11 +20,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TripDao {
     @Transaction
-    @Query("SELECT * FROM trips ORDER BY date DESC")
+    @Query("SELECT * FROM trips ORDER BY startDate DESC")
     fun getAllTrips(): Flow<List<TripWithPlaces>>
 
     @Transaction
-    @Query("SELECT * FROM trips WHERE userId = :userId ORDER BY date DESC")
+    @Query("SELECT * FROM trips WHERE userId = :userId ORDER BY startDate DESC")
     fun getTripsByUser(userId: String): Flow<List<TripWithPlaces>>
 
     @Transaction

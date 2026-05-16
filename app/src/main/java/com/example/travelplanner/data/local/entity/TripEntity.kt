@@ -25,7 +25,8 @@ data class TripEntity(
     val userId: String,
     val title: String,
     val budget: Double,
-    val date: Long,
+    val startDate: Long,
+    val endDate: Long,
     val isCompleted: Boolean = false,
     val syncStatus: SyncStatus = SyncStatus.PENDING
 )
