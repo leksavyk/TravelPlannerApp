@@ -6,19 +6,23 @@ import com.example.travelplanner.data.model.Trip
 import com.example.travelplanner.data.model.User
 import java.util.Date
 import java.util.UUID
+import java.util.Calendar
 
 object MockData {
+    private fun getFutureDate(daysFromNow: Int): Date {
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.DAY_OF_YEAR, daysFromNow)
+        return calendar.time
+    }
     val kyivPlaces = mutableStateListOf(
         Place(
             id = UUID.randomUUID(),
             name = "Золоті Ворота",
-            //rating = 4.8f,
             isVisited = true
         ),
         Place(
             id = UUID.randomUUID(),
             name = "Андріївський узвіз",
-            //rating = 4.9f,
             isVisited = true
         )
     )
@@ -27,13 +31,11 @@ object MockData {
         Place(
             id = UUID.randomUUID(),
             name = "Площа Ринок",
-            //rating = 5.0f,
             isVisited = false
         ),
         Place(
             id = UUID.randomUUID(),
             name = "Високий Замок",
-            //rating = 4.5f,
             isVisited = false
         )
     )
@@ -44,6 +46,7 @@ object MockData {
             title = "Вікенд у Києві",
             budget = 3500.0,
             startDate = Date(),
+            endDate = getFutureDate(2),
             isCompleted = true,
             places = kyivPlaces
         ),
@@ -51,7 +54,8 @@ object MockData {
             id = UUID.randomUUID(),
             title = "Прогулянка Львовом",
             budget = 5000.0,
-            startDate = Date(),
+            startDate = getFutureDate(4),
+            endDate = getFutureDate(8),
             isCompleted = false,
             places = lvivPlaces
         )
@@ -87,12 +91,16 @@ object MockData {
     }
 
     // function for creating a new trip
-    fun addNewTrip(title: String, budget: Double, date: Long?, places: List<Place>) {
+    fun addNewTrip(title: String, budget: Double, startDateLong: Long?, endDateLong: Long?, places: List<Place>) {
+        val start = if (startDateLong != null) Date(startDateLong) else Date()
+        val end = if (endDateLong != null) Date(endDateLong) else Date(start.time + 86400000)
+
         val newTrip = Trip(
             id = UUID.randomUUID(),
             title = title,
             budget = budget,
-            startDate = if (date != null) Date(date) else Date(),
+            startDate = start,
+            endDate = end,
             isCompleted = false,
             places = places.toMutableList()
         )

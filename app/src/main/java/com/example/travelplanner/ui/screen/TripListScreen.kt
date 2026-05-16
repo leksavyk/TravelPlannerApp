@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -21,6 +22,9 @@ import com.example.travelplanner.ui.viewmodel.TripViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TripsListScreen(navController: NavController, viewModel: TripViewModel) {
+    LaunchedEffect(Unit) {
+        viewModel.startWebSocket()
+    }
 
     val trips by viewModel.trips.collectAsState()
     val notifications by viewModel.notifications.collectAsState()

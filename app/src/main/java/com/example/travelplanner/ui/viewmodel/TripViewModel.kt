@@ -62,7 +62,15 @@ class TripViewModel(private val repository: TripRepository, val userRepository: 
 
     init {
         observeSocketMessages()
-        socketManager.connect("wss://travel.planner.mock")
+    }
+
+    fun startWebSocket() {
+        viewModelScope.launch {
+            // Connect only if we are not already connecting or are no longer connected
+            if (socketManager.state.value == ConnectionState.Disconnected) {
+                socketManager.connect("wss://travel.planner.mock")
+            }
+        }
     }
 
     private fun observeSocketMessages() {
