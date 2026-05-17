@@ -20,4 +20,10 @@ interface PackingDao {
 
     @Query("DELETE FROM packing_items WHERE tripId = :tripId")
     suspend fun deleteAllItemsForTrip(tripId: String)
+
+    @Query("UPDATE packing_items SET name = :newName WHERE id = :itemId")
+    suspend fun updateItemName(itemId: String, newName: String)
+
+    @Query("DELETE FROM packing_items WHERE id = :itemId")
+    suspend fun deleteById(itemId: String)
 }

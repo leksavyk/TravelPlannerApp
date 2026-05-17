@@ -152,12 +152,15 @@ class TripViewModel(private val repository: TripRepository, val userRepository: 
         }
     }
 
-    fun getPackingItems(tripId: String): StateFlow<List<PackingItemEntity>> {
-        return repository.getPackingItems(tripId)
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = emptyList()
-            )
+    fun deletePackingItem(itemId: String) {
+        viewModelScope.launch {
+            repository.deletePackingItemById(itemId)
+        }
+    }
+
+    fun updatePackingItemName(itemId: String, newName: String) {
+        viewModelScope.launch {
+            repository.updatePackingItemName(itemId, newName)
+        }
     }
 }

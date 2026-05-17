@@ -91,4 +91,12 @@ class TripRepository(private val tripDao: TripDao, private val packingDao: Packi
     suspend fun deletePackingItem(item: PackingItemEntity) {
         packingDao.deleteItem(item)
     }
+
+    suspend fun deletePackingItemById(itemId: String) {
+        packingDao.deleteById(itemId)
+    }
+
+    suspend fun updatePackingItemName(itemId: String, newName: String) {
+        packingDao.updateItemName(itemId, newName)
+    }
 }

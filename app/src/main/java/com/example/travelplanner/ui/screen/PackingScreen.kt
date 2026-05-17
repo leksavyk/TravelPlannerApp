@@ -31,7 +31,6 @@ fun PackingScreen(tripId: String, viewModel: TripViewModel, navController: NavCo
     }
     val items by viewModel.packingItems.collectAsState()
 
-//    val items by viewModel.getPackingItems(tripId).collectAsState()
     var selectedCategoryName by remember { mutableStateOf("Усі") }
 
     val categories = PackingCategory.values().toList()
@@ -39,6 +38,10 @@ fun PackingScreen(tripId: String, viewModel: TripViewModel, navController: NavCo
     var showAddDialog by remember { mutableStateOf(false) }
     var newItemName by remember { mutableStateOf("") }
     var categoryForNewItem by remember { mutableStateOf<PackingCategory?>(null) }
+
+    var showEditDialog by remember { mutableStateOf(false) }
+    var itemToEdit by remember { mutableStateOf<com.example.travelplanner.data.local.entity.PackingItemEntity?>(null) }
+    var editedName by remember { mutableStateOf("") }
 
     val filteredItems = remember(items, selectedCategoryName) {
         if (selectedCategoryName == "Усі") items
@@ -113,6 +116,44 @@ fun PackingScreen(tripId: String, viewModel: TripViewModel, navController: NavCo
         )
     }
 
+    if (showEditDialog && itemToEdit != null) {
+        AlertDialog(
+            onDismissRequest = { showEditDialog = false },
+            title = { Text("Редагувати річ") },
+            text = {
+                OutlinedTextField(
+                    value = editedName,
+                    onValueChange = { editedName = it },
+                    label = { Text("Назва") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFF8E6CEF),
+                        focusedLabelColor = Color(0xFF8E6CEF)
+                    )
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (editedName.isNotBlank()) {
+                            viewModel.updatePackingItemName(itemToEdit!!.id, editedName)
+                            showEditDialog = false
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8E6CEF))
+                ) {
+                    Text("Зберегти")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showEditDialog = false }) {
+                    Text("Скасувати")
+                }
+            }
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -177,7 +218,13 @@ fun PackingScreen(tripId: String, viewModel: TripViewModel, navController: NavCo
                         items(categoryItems) { item ->
                             PackingItemRow(
                                 item = item,
-                                onToggle = { isChecked -> viewModel.togglePackingItem(item.id, isChecked) }
+                                onToggle = { isChecked -> viewModel.togglePackingItem(item.id, isChecked) },
+                                onDelete = { viewModel.deletePackingItem(item.id) },
+                                onEdit = {
+                                    itemToEdit = item
+                                    editedName = item.name
+                                    showEditDialog = true
+                                }
                             )
                         }
 
