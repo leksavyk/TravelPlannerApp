@@ -1,14 +1,9 @@
 package com.example.travelplanner.ui.screen
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,21 +11,18 @@ import androidx.compose.material.icons.*
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.*
 import com.example.travelplanner.data.model.Place
 import com.example.travelplanner.ui.viewmodel.TripViewModel
 import com.example.travelplanner.utils.formatToUk
 import java.util.UUID
-import com.example.travelplanner.R
 import com.example.travelplanner.ui.components.TripHeaderCard
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -151,6 +143,24 @@ fun TripDetailScreen(tripId: String?, navController: NavController, viewModel: T
                         budget = trip.budget,
                         date = trip.startDate.formatToUk()
                     )
+
+                    Button(
+                        onClick = {
+                            navController.navigate("packing_list/${trip.id}")
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF8E6CEF)
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Icon(Icons.Default.List, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Список речей")
+                    }
+
                     Text(
                         text = "Місця для відвідування",
                         style = MaterialTheme.typography.titleMedium,

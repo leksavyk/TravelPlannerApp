@@ -2,6 +2,8 @@ package com.example.travelplanner.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.travelplanner.data.local.entity.PackingItemEntity
+import com.example.travelplanner.data.model.PackingCategory
 import com.example.travelplanner.data.model.Trip
 import com.example.travelplanner.data.repository.TripRepository
 import com.example.travelplanner.data.repository.UserRepository
@@ -119,5 +121,43 @@ class TripViewModel(private val repository: TripRepository, val userRepository: 
 
     fun markAllAsRead() {
         _notifications.value = _notifications.value.map { it.copy(isRead = true) }
+    }
+
+    private val _packingItems = MutableStateFlow<List<PackingItemEntity>>(emptyList())
+    val packingItems: StateFlow<List<PackingItemEntity>> = _packingItems.asStateFlow()
+
+    fun loadPackingItems(tripId: String) {
+        viewModelScope.launch {
+            repository.getPackingItems(tripId).collect { items ->
+                _packingItems.value = items
+            }
+        }
+    }
+
+    fun addPackingItem(tripId: String, name: String, category: PackingCategory) {
+        viewModelScope.launch {
+            val newItem = PackingItemEntity(
+                tripId = tripId,
+                name = name,
+                category = category,
+                isChecked = false
+            )
+            repository.addPackingItem(newItem)
+        }
+    }
+
+    fun togglePackingItem(itemId: String, isChecked: Boolean) {
+        viewModelScope.launch {
+            repository.updatePackingItemStatus(itemId, isChecked)
+        }
+    }
+
+    fun getPackingItems(tripId: String): StateFlow<List<PackingItemEntity>> {
+        return repository.getPackingItems(tripId)
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = emptyList()
+            )
     }
 }

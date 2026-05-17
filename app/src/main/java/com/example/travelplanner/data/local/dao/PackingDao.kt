@@ -12,9 +12,12 @@ interface PackingDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItem(item: PackingItemEntity)
 
-    @Update
-    suspend fun updateItem(item: PackingItemEntity)
+    @Query("UPDATE packing_items SET isChecked = :isChecked WHERE id = :itemId")
+    suspend fun updateCheckStatus(itemId: String, isChecked: Boolean)
 
     @Delete
     suspend fun deleteItem(item: PackingItemEntity)
+
+    @Query("DELETE FROM packing_items WHERE tripId = :tripId")
+    suspend fun deleteAllItemsForTrip(tripId: String)
 }

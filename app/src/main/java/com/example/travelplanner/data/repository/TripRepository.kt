@@ -1,6 +1,8 @@
 package com.example.travelplanner.data.repository
 
+import com.example.travelplanner.data.local.dao.PackingDao
 import com.example.travelplanner.data.local.dao.TripDao
+import com.example.travelplanner.data.local.entity.PackingItemEntity
 import com.example.travelplanner.data.local.entity.PlaceEntity
 import com.example.travelplanner.data.mapper.toDomain
 import com.example.travelplanner.data.mapper.toEntity
@@ -13,7 +15,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
-class TripRepository(private val tripDao: TripDao, private val apiService: MockTripApiService, private val userRepository: UserRepository) {
+class TripRepository(private val tripDao: TripDao, private val packingDao: PackingDao, private val apiService: MockTripApiService, private val userRepository: UserRepository) {
     @OptIn(ExperimentalCoroutinesApi::class)
     val allTrips: Flow<List<Trip>> = userRepository.currentUser.flatMapLatest { user ->
         if (user == null) {
@@ -54,17 +56,6 @@ class TripRepository(private val tripDao: TripDao, private val apiService: MockT
         }
     }
 
-//    suspend fun deleteTrip(trip: Trip, userId: String) {
-//        val entity = trip.toEntity(ownerId = userId)
-//        tripDao.deleteTrip(entity)
-//
-//        try {
-//            apiService.deleteTripFromServer(entity.id)
-//        } catch (e: Exception) {
-//            // Offline-first логіка
-//        }
-//    }
-
     suspend fun deleteTrip(trip: Trip, userId: String) {
         val entity = trip.toEntity(ownerId = userId)
 
@@ -83,5 +74,21 @@ class TripRepository(private val tripDao: TripDao, private val apiService: MockT
             tripDao.deleteTrip(entity)
             // println("DEBUG: Видалено локально, але сервер не відповів. Потрібна синхронізація пізніше")
         }
+    }
+
+    fun getPackingItems(tripId: String): Flow<List<PackingItemEntity>> {
+        return packingDao.getItemsForTrip(tripId)
+    }
+
+    suspend fun addPackingItem(item: PackingItemEntity) {
+        packingDao.insertItem(item)
+    }
+
+    suspend fun updatePackingItemStatus(itemId: String, isChecked: Boolean) {
+        packingDao.updateCheckStatus(itemId, isChecked)
+    }
+
+    suspend fun deletePackingItem(item: PackingItemEntity) {
+        packingDao.deleteItem(item)
     }
 }

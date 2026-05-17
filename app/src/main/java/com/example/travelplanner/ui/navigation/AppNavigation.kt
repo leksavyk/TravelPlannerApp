@@ -17,6 +17,7 @@ import com.example.travelplanner.ui.screen.ProfileScreen
 import com.example.travelplanner.ui.screen.TripDetailScreen
 import com.example.travelplanner.ui.screen.TripsListScreen
 import com.example.travelplanner.ui.screen.NotificationScreen
+import com.example.travelplanner.ui.screen.PackingScreen
 import com.example.travelplanner.ui.viewmodel.AuthViewModel
 import com.example.travelplanner.ui.viewmodel.TripViewModel
 
@@ -29,7 +30,7 @@ fun AppNavigation() {
     val database = remember { AppDatabase.getDatabase(context) }
     val apiService = remember { MockTripApiService() }
     val userRepository = remember { UserRepository(database.userDao()) }
-    val tripRepository = remember { TripRepository(database.tripDao(), apiService, userRepository) }
+    val tripRepository = remember { TripRepository(database.tripDao(), database.packingDao(), apiService, userRepository) }
     val socketManager = remember { SocketManager() }
 
     val tripViewModel = remember { TripViewModel(tripRepository, userRepository, socketManager) }
@@ -68,6 +69,16 @@ fun AppNavigation() {
                     tripId = tripId,
                     navController = navController,
                     viewModel = tripViewModel
+                )
+            }
+
+            composable("packing_list/{tripId}") { backStackEntry ->
+                val tripId = backStackEntry.arguments?.getString("tripId") ?: ""
+
+                PackingScreen(
+                    tripId = tripId,
+                    viewModel = tripViewModel,
+                    navController = navController
                 )
             }
 
