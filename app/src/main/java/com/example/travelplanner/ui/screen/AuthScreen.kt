@@ -2,6 +2,8 @@ package com.example.travelplanner.ui.screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -9,17 +11,28 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.travelplanner.data.biometric.SensorType
 import com.example.travelplanner.ui.viewmodel.AuthState
 import com.example.travelplanner.ui.viewmodel.AuthViewModel
+import com.example.travelplanner.ui.viewmodel.SecurityViewModel
 
 @Composable
-fun AuthScreen(navController: NavController, viewModel: AuthViewModel) {
+fun AuthScreen(navController: NavController, viewModel: AuthViewModel, securityViewModel: SecurityViewModel) {
     var isLoginMode by remember { mutableStateOf(true) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
 
     val authState by viewModel.authState.collectAsState()
+
+    val isBiometricEnabled by securityViewModel.isBiometricEnabled.collectAsState()
+    val sensorType by securityViewModel.sensorType.collectAsState()
+    val savedUserId = remember { securityViewModel.getSavedUserId() }
+
+    val showBiometricLoginButton = isLoginMode &&
+            isBiometricEnabled &&
+            sensorType != SensorType.UNSUPPORTED &&
+            !savedUserId.isNullOrEmpty()
 
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),
@@ -99,6 +112,22 @@ fun AuthScreen(navController: NavController, viewModel: AuthViewModel) {
                 enabled = email.isNotBlank() && password.isNotBlank()
             ) {
                 Text(if (isLoginMode) "Увійти" else "Зареєструватися")
+            }
+
+            if (showBiometricLoginButton) {
+                Spacer(modifier = Modifier.height(12.dp))
+
+                OutlinedButton(
+                    onClick = {
+                        // Навігуємо на повноцінний екран біометричного входу
+                        navController.navigate("biometric_login")
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(Icons.Default.Fingerprint, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Увійти через біометрію")
+                }
             }
         }
 
