@@ -38,15 +38,6 @@ class SecurityViewModel(
     /**
      * Called when the user toggles the switch on the settings screen
      */
-//    fun toggleBiometricProtection(isEnabled: Boolean) {
-//        securityStorage.setBiometricProtectionEnabled(isEnabled)
-//        _isBiometricEnabled.value = isEnabled
-//
-//        if (!isEnabled) {
-//            appLockController.lockSessionManually()
-//        }
-//    }
-
     fun toggleBiometricProtection(isEnabled: Boolean, userId: String?) {
         securityStorage.setBiometricProtectionEnabled(isEnabled)
         _isBiometricEnabled.value = isEnabled
