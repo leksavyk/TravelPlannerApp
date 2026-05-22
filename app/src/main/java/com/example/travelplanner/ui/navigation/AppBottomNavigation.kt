@@ -11,6 +11,7 @@ fun AppBottomNavigation(navController: NavHostController) {
     val items = listOf(
         Screen.Trips,
         Screen.AddTrip,
+        Screen.Calendar,
         Screen.Profile
     )
 

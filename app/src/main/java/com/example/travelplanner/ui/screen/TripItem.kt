@@ -19,7 +19,11 @@ fun TripItem(
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 6.dp)
             .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(4.dp),
+
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
 
@@ -40,30 +44,3 @@ fun TripItem(
         }
     }
 }
-
-//@Composable
-//fun TripItem(trip: Trip, onClick: () -> Unit) {
-//    Card(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .clickable { onClick() },
-//        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-//    ) {
-//        Row(
-//            modifier = Modifier.padding(16.dp),
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            Column(modifier = Modifier.weight(1f)) {
-//                Text(text = trip.title, style = MaterialTheme.typography.titleLarge)
-//                Text(
-//                    text = "Бюджет: ${trip.budget} грн",
-//                    style = MaterialTheme.typography.bodyMedium
-//                )
-//            }
-//            // Візуальний індикатор завершення
-//            if (trip.isCompleted) {
-//                Icon(Icons.Default.Done, contentDescription = "Завершено", tint = Color.Green)
-//            }
-//        }
-//    }
-//}

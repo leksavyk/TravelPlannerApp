@@ -6,6 +6,6 @@ import java.util.UUID
 data class Place(
     val id: UUID,
     val name: String,
-    val rating: Float,
+    //val rating: Float,
     val isVisited: Boolean
 )

@@ -9,6 +9,7 @@ data class Trip(
     val title: String,
     val budget: Double,
     val startDate: Date,
+    val endDate: Date,
     val isCompleted: Boolean,
     val places: List<Place>
 )

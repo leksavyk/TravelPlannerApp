@@ -18,16 +18,19 @@ import com.example.travelplanner.data.MockData
 import com.example.travelplanner.data.model.Place
 import com.example.travelplanner.ui.components.DatePickerModal
 import com.example.travelplanner.ui.navigation.Screen
+import com.example.travelplanner.ui.viewmodel.TripViewModel
 import com.example.travelplanner.utils.formatToUk
 import java.util.Date
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTripScreen(navController: NavController) {
+fun AddTripScreen(navController: NavController, viewModel: TripViewModel) {
     var title by remember { mutableStateOf("") }
     var budget by remember { mutableStateOf("") }
     var selectedDate by remember { mutableStateOf<Long?>(null) }
+    var selectedEndDate by remember { mutableStateOf<Long?>(null) }
+    var showEndDatePicker by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
 
     val tempPlaces = remember { mutableStateListOf<Place>() }
@@ -60,13 +63,24 @@ fun AddTripScreen(navController: NavController) {
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
 
-                OutlinedButton(
-                    onClick = { showDatePicker = true },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(Icons.Default.DateRange, contentDescription = null)
-                    Spacer(Modifier.width(8.dp))
-                    Text(text = selectedDate?.let { Date(it).formatToUk() } ?: "Оберіть дату")
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedButton(
+                        onClick = { showDatePicker = true },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(Icons.Default.DateRange, contentDescription = null)
+                        Spacer(Modifier.width(4.dp))
+                        Text(text = selectedDate?.let { Date(it).formatToUk() } ?: "Початок", fontSize = 12.sp)
+                    }
+
+                    OutlinedButton(
+                        onClick = { showEndDatePicker = true },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(Icons.Default.DateRange, contentDescription = null)
+                        Spacer(Modifier.width(4.dp))
+                        Text(text = selectedEndDate?.let { Date(it).formatToUk() } ?: "Кінець", fontSize = 12.sp)
+                    }
                 }
             }
 
@@ -82,7 +96,7 @@ fun AddTripScreen(navController: NavController) {
                     )
                     IconButton(onClick = {
                         if (newPlaceName.isNotBlank()) {
-                            tempPlaces.add(Place(UUID.randomUUID(), newPlaceName, 0f, false))
+                            tempPlaces.add(Place(UUID.randomUUID(), newPlaceName, false))
                             newPlaceName = ""
                         }
                     }) {
@@ -101,12 +115,17 @@ fun AddTripScreen(navController: NavController) {
                 Button(
                     onClick = {
                         if (title.isNotBlank() && budget.isNotBlank()) {
-                            MockData.addNewTrip(
+                            val newTrip = com.example.travelplanner.data.model.Trip(
+                                id = UUID.randomUUID(),
                                 title = title,
                                 budget = budget.toDoubleOrNull() ?: 0.0,
-                                date = selectedDate,
+                                startDate = Date(selectedDate ?: System.currentTimeMillis()),
+                                endDate = Date(selectedEndDate ?: (selectedDate ?: System.currentTimeMillis()) + 86400000),
+                                isCompleted = false,
                                 places = tempPlaces.toList()
                             )
+                            viewModel.addTrip(newTrip)
+
                             navController.navigate(Screen.Trips.route) {
                                 popUpTo(Screen.Trips.route) { inclusive = true }
                             }
@@ -124,6 +143,13 @@ fun AddTripScreen(navController: NavController) {
             DatePickerModal(
                 onDateSelected = { date -> selectedDate = date },
                 onDismiss = { showDatePicker = false }
+            )
+        }
+
+        if (showEndDatePicker) {
+            DatePickerModal(
+                onDateSelected = { date -> selectedEndDate = date },
+                onDismiss = { showEndDatePicker = false }
             )
         }
     }
